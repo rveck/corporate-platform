@@ -8,6 +8,6 @@ import br.com.veck.customerservice.model.Customer;
 @Repository
 public interface CustomerRepository extends MongoRepository<Customer, String>{
 	
-	public Customer findOneById(String id);
+	public Customer findOneById(String id) throws Exception;
 
 }
