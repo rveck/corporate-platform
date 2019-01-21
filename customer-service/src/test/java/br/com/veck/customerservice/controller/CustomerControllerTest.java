@@ -14,8 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import br.com.veck.customerservice.model.Customer;
-import br.com.veck.customerservice.repository.CustomerRepository;
+import br.com.veck.customerservice.service.CustomerService;
+import br.com.veck.model.Customer;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -25,12 +25,12 @@ public class CustomerControllerTest {
 	private CustomerController customerController;
 	
 	@Mock
-	private CustomerRepository customerRepository;
+	private CustomerService customerService;
 	
 	@Test
 	public void create_customer_should_return_404_status_code() {
 		//setup
-		when(customerRepository.save(Mockito.any())).thenReturn(null);
+		when(customerService.save(Mockito.any())).thenReturn(null);
 		
 		//test
 		assertThat(customerController.create(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.INTERNAL_SERVER_ERROR);				
@@ -39,7 +39,7 @@ public class CustomerControllerTest {
 	@Test
 	public void create_customer_should_return_200_status_code() {
 		//setup
-		when(customerRepository.save(Mockito.any())).thenReturn(new Customer());
+		when(customerService.save(Mockito.any())).thenReturn(new Customer());
 		
 		//test
 		assertThat(customerController.create(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.OK);				
@@ -48,7 +48,7 @@ public class CustomerControllerTest {
 	@Test
 	public void consult_customer_should_return_404_status_code() throws Exception {
 		//setup
-		when(customerRepository.findOneById(Mockito.any())).thenReturn(null);
+		when(customerService.findOneById(Mockito.any())).thenReturn(null);
 		
 		//test
 		assertThat(customerController.consult(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);				
@@ -57,7 +57,7 @@ public class CustomerControllerTest {
 	@Test
 	public void consult_customer_should_return_500_status_code() throws Exception {
 		//setup
-		when(customerRepository.findOneById(Mockito.any())).thenThrow(new Exception());
+		when(customerService.findOneById(Mockito.any())).thenThrow(new Exception());
 		
 		//test
 		assertThat(customerController.consult(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.INTERNAL_SERVER_ERROR);				
@@ -66,7 +66,7 @@ public class CustomerControllerTest {
 	@Test
 	public void consult_customer_should_return_200_status_code() throws Exception {
 		//setup
-		when(customerRepository.findOneById(Mockito.any())).thenReturn(new Customer());
+		when(customerService.findOneById(Mockito.any())).thenReturn(new Customer());
 		
 		//test
 		assertThat(customerController.consult(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.OK);				
@@ -75,7 +75,7 @@ public class CustomerControllerTest {
 	@Test
 	public void consult_all_customer_should_return_404_status_code() throws Exception {
 		//setup
-		when(customerRepository.findAll()).thenReturn(null);
+		when(customerService.findAll()).thenReturn(null);
 		
 		//test
 		assertThat(customerController.consultAll().getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);				
@@ -84,7 +84,7 @@ public class CustomerControllerTest {
 	@Test
 	public void consult_all_customer_should_return_200_status_code() throws Exception {
 		//setup
-		when(customerRepository.findAll()).thenReturn(Arrays.asList(new Customer()));
+		when(customerService.findAll()).thenReturn(Arrays.asList(new Customer()));
 		
 		//test
 		assertThat(customerController.consultAll().getStatusCode()).isEqualByComparingTo(HttpStatus.OK);				
@@ -93,7 +93,7 @@ public class CustomerControllerTest {
 	@Test
 	public void update_customer_should_return_404_status_code() throws Exception {
 		//setup
-		when(customerRepository.save(Mockito.any())).thenReturn(null);
+		when(customerService.save(Mockito.any())).thenReturn(null);
 		
 		//test
 		assertThat(customerController.update(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);				
@@ -102,7 +102,7 @@ public class CustomerControllerTest {
 	@Test
 	public void update_customer_should_return_200_status_code() throws Exception {
 		//setup
-		when(customerRepository.save(Mockito.any())).thenReturn(new Customer());
+		when(customerService.save(Mockito.any())).thenReturn(new Customer());
 		
 		//test
 		assertThat(customerController.update(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.OK);				
@@ -111,7 +111,7 @@ public class CustomerControllerTest {
 	@Test
 	public void delete_customer_should_return_404_status_code() throws Exception {
 		//setup
-		when(customerRepository.findOneById(Mockito.any())).thenReturn(null);
+		when(customerService.findOneById(Mockito.any())).thenReturn(null);
 		
 		//test
 		assertThat(customerController.delete(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);				
@@ -120,7 +120,7 @@ public class CustomerControllerTest {
 	@Test
 	public void delete_customer_should_return_200_status_code() throws Exception {
 		//setup
-		when(customerRepository.findOneById(Mockito.any())).thenReturn(new Customer());
+		when(customerService.findOneById(Mockito.any())).thenReturn(new Customer());
 		
 		//test
 		assertThat(customerController.delete(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.OK);				
@@ -129,7 +129,7 @@ public class CustomerControllerTest {
 	@Test
 	public void delete_customer_should_return_500_status_code() throws Exception {
 		//setup
-		when(customerRepository.findOneById(Mockito.any())).thenThrow(new Exception());
+		when(customerService.findOneById(Mockito.any())).thenThrow(new Exception());
 		
 		//test
 		assertThat(customerController.delete(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.INTERNAL_SERVER_ERROR);				

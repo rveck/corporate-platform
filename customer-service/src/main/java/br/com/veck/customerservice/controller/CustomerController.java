@@ -15,21 +15,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.veck.customerservice.model.Customer;
-import br.com.veck.customerservice.repository.CustomerRepository;
-import br.com.veck.customerservice.util.Constants;
+import br.com.veck.customerservice.service.CustomerService;
+import br.com.veck.model.Customer;
+import br.com.veck.util.Constants;
 
 @RestController
-@RequestMapping(Constants.ENDPOINT_CUSTOMER)
+@RequestMapping(Constants.CUSTOMER_SERVICE_ENDPOINT)
 public class CustomerController {
 	
 	@Autowired
-	private CustomerRepository customerRepository;
+	private CustomerService customerService;
 	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Customer> create(@RequestBody Customer customer) {
 		try {
-			customer = customerRepository.save(customer);
+			customer = customerService.save(customer);
 			if (customer == null) {
 				throw new Exception();
 			}
@@ -42,7 +42,7 @@ public class CustomerController {
 	@GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Customer> consult(@PathVariable String id) {
 		try {
-			Customer customer = customerRepository.findOneById(id);
+			Customer customer = customerService.findOneById(id);
 			if (customer == null) {
 				return new ResponseEntity<Customer>(HttpStatus.NOT_FOUND);	
 			}
@@ -54,16 +54,20 @@ public class CustomerController {
 	
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Customer>> consultAll() {
-		List<Customer> lstCustomers = customerRepository.findAll();
-		if (lstCustomers == null || lstCustomers.size() == 0) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		try {
+			List<Customer> lstCustomers = customerService.findAll();
+			if (lstCustomers == null || lstCustomers.size() == 0) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			return new ResponseEntity<List<Customer>>(lstCustomers, HttpStatus.OK);
+		}catch(Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<List<Customer>>(lstCustomers, HttpStatus.OK); 			
 	}
 	
 	@PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Customer> update(@RequestBody Customer customer) {
-		customer = customerRepository.save(customer);
+		customer = customerService.save(customer);
 		if (customer == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -73,11 +77,11 @@ public class CustomerController {
 	@DeleteMapping(path = "{id}")
 	public ResponseEntity<Customer> delete(@PathVariable String id) {
 		try {
-			Customer customer = customerRepository.findOneById(id);
+			Customer customer = customerService.findOneById(id);
 			if (customer == null) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}
-			customerRepository.deleteById(id);
+			customerService.deleteById(id);
 			return new ResponseEntity<Customer>(HttpStatus.OK);			
 		}catch(Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

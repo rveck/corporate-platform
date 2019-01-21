@@ -5,7 +5,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,11 +17,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import com.google.gson.Gson;
 
 import br.com.veck.customerservice.controller.CustomerController;
-import br.com.veck.customerservice.model.Customer;
-import br.com.veck.customerservice.util.Constants;
-import br.com.veck.customerservice.util.Util;
+import br.com.veck.model.Customer;
+import br.com.veck.util.Constants;
+import br.com.veck.util.Util;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -31,33 +36,50 @@ public class CustomerApiTest {
 	
 	@Test
     public void test_http_methods() throws Exception {
-        this.mockMvc.perform(get(Constants.ENDPOINT_CUSTOMER))
-	    	.andDo(print())	    	
-	    	.andExpect(handler().handlerType(CustomerController.class))
-	    	.andExpect(handler().methodName("consultAll"));
-                        
-        this.mockMvc.perform(get(Constants.ENDPOINT_CUSTOMER + "/{id}", new String("1")))         	
-        	.andDo(print())			
-        	.andExpect(handler().handlerType(CustomerController.class))
-        	.andExpect(handler().methodName("consult"));
-/*        
-        this.mockMvc.perform(post(Constants.ENDPOINT_CUSTOMER)
-            	.content(Util.asJsonString(new Customer()))
-    			.contentType(MediaType.APPLICATION_JSON)			
-    			.accept(MediaType.APPLICATION_JSON))			
+                                              
+        MvcResult result = this.mockMvc.perform(post(Constants.CUSTOMER_SERVICE_ENDPOINT)        		
+            	.content(Util.convertObjectToJson(new Customer()))
+    			.contentType(MediaType.APPLICATION_JSON_UTF8)			
+    			.accept(MediaType.APPLICATION_JSON_UTF8))        	
+        		.andDo(print())	
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             	.andExpect(handler().handlerType(CustomerController.class))
-            	.andExpect(handler().methodName("create"));
+            	.andExpect(handler().methodName("create"))
+            	.andReturn();
         
-        this.mockMvc.perform(delete(Constants.ENDPOINT_CUSTOMER + "/{id}", new String("1")))        	    			    			    				
-        	.andExpect(handler().handlerType(CustomerController.class))
-        	.andExpect(handler().methodName("delete"));
+        Gson gson = new Gson();
+        String json = result.getResponse().getContentAsString();
+        Customer customerAdded = gson.fromJson(json, Customer.class);
         
-        this.mockMvc.perform(put(Constants.ENDPOINT_CUSTOMER, Util.asJsonString(new Customer()))        	
-			.contentType(MediaType.APPLICATION_JSON)    			
+        this.mockMvc.perform(get(Constants.CUSTOMER_SERVICE_ENDPOINT))
+	    	.andDo(print())
+	    	.andExpect(status().isOk())
+	    	.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+	    	.andExpect(handler().handlerType(CustomerController.class))
+	    	.andExpect(handler().methodName("consultAll"));  
+        
+        this.mockMvc.perform(get(Constants.CUSTOMER_SERVICE_ENDPOINT + "/{id}", customerAdded.getId()))         	
+	    	.andDo(print())
+	    	.andExpect(status().isOk())
+    		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+	    	.andExpect(handler().handlerType(CustomerController.class))
+	    	.andExpect(handler().methodName("consult"));
+                        
+        this.mockMvc.perform(put(Constants.CUSTOMER_SERVICE_ENDPOINT)  
+        	.content(Util.convertObjectToJson(customerAdded))
+			.contentType(MediaType.APPLICATION_JSON_UTF8)    			
 			.accept(MediaType.APPLICATION_JSON))		
+        	.andDo(print())
+        	.andExpect(status().isOk())
+    		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
         	.andExpect(handler().handlerType(CustomerController.class))
         	.andExpect(handler().methodName("update"));
-*/
+        
+        this.mockMvc.perform(delete(Constants.CUSTOMER_SERVICE_ENDPOINT + "/{id}", customerAdded.getId()))
+        	.andExpect(status().isOk())
+    		.andExpect(handler().handlerType(CustomerController.class))        	
+    		.andExpect(handler().methodName("delete"));
     }
 	
 }
