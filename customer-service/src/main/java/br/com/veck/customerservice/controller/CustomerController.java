@@ -2,6 +2,8 @@ package br.com.veck.customerservice.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.veck.customerservice.service.CustomerService;
 import br.com.veck.model.Customer;
 import br.com.veck.util.Constants;
+import br.com.veck.util.Util;
 
 @RestController
 @RequestMapping(Constants.CUSTOMER_SERVICE_ENDPOINT)
@@ -27,8 +30,12 @@ public class CustomerController {
 	private CustomerService customerService;
 	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Customer> create(@RequestBody Customer customer) {
+	public ResponseEntity<Customer> create(@RequestBody Customer customer, HttpServletRequest request) {
 		try {
+			String ip = customer.getIp();
+			if (ip == null) {
+				customer.setIp(Util.getClientIp(request));
+			}
 			customer = customerService.save(customer);
 			if (customer == null) {
 				throw new Exception();

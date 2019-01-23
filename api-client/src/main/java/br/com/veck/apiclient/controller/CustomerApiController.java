@@ -42,7 +42,7 @@ public class CustomerApiController {
 	public ResponseEntity<String> create(@RequestBody Customer customer, HttpServletRequest request) {
 		try {			
 			customer.setOperation(Constants.Operations.CREATE.getValue());
-			customer.setIp(getClientIp(request));
+			customer.setIp(Util.getClientIp(request));
 			rabbitTemplate.convertAndSend(rabbitMqExchange, rabbitMqRoutingKey, Util.convertObjectToJson(customer));			
 			return new ResponseEntity<>(HttpStatus.OK);
 		}catch(Exception e) {
@@ -73,17 +73,4 @@ public class CustomerApiController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	private String getClientIp(HttpServletRequest request) {
-
-        String remoteAddr = null;
-        
-        if (request != null) {
-            remoteAddr = request.getHeader("X-FORWARDED-FOR");
-            if (remoteAddr == null || "".equals(remoteAddr)) {
-                remoteAddr = request.getRemoteAddr();
-            }
-        }
-        return remoteAddr;
-    }
 }

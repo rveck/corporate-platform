@@ -33,7 +33,7 @@ public class CustomerControllerTest {
 		when(customerService.save(Mockito.any())).thenReturn(null);
 		
 		//test
-		assertThat(customerController.create(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.INTERNAL_SERVER_ERROR);				
+		assertThat(customerController.create(Mockito.any(), Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.INTERNAL_SERVER_ERROR);				
 	}
 	
 	@Test
@@ -42,7 +42,7 @@ public class CustomerControllerTest {
 		when(customerService.save(Mockito.any())).thenReturn(new Customer());
 		
 		//test
-		assertThat(customerController.create(Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.OK);				
+		assertThat(customerController.create(Mockito.any(), Mockito.any()).getStatusCode()).isEqualByComparingTo(HttpStatus.OK);				
 	}
 	
 	@Test

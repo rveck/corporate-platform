@@ -18,7 +18,7 @@ public class CustomerMessageProcessor {
 		
 		switch (customer.getOperation()){
 			case "create":{				
-				customerController.create(customer);
+				customerController.create(customer, null);
 				break;
 			}
 			case "update":{				

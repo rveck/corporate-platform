@@ -3,6 +3,8 @@ package br.com.veck.customerservice.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,11 +40,7 @@ public class CustomerServiceTest {
 	@Test
 	public void should_return_null_geolocalization_object() {
 		
-		Geolocalization geolocalization = new Geolocalization();
-		geolocalization.setCityName("teste");
-		geolocalization.setContinentName("teste");
-		geolocalization.setCountryName("teste");
-		
+		Geolocalization geolocalization = new Geolocalization();		
 		IpVigilanteResponse ipVigilanteResponse = new IpVigilanteResponse();
 		ipVigilanteResponse.setStatus(Constants.ERROR);
 		ipVigilanteResponse.setData(geolocalization);
@@ -51,7 +49,17 @@ public class CustomerServiceTest {
 		when(restTemplate.getForObject(Mockito.anyString(), Mockito.eq(IpVigilanteResponse.class))).thenReturn(ipVigilanteResponse);
 		
 		//test
-		assertThat(customerService.getGeolocalization(Mockito.anyString())).isNull();
+		assertThat(customerService.getGeolocalization(Optional.ofNullable(Mockito.anyString()))).isNull();
+	}
+	
+	@Test
+	public void should_return_geolocation_object_not_null() {
+		
+	}
+	
+	@Test
+	public void should_return_weather_object_not_null() {
+		
 	}
 
 }
