@@ -1,5 +1,7 @@
 package br.com.veck.apiclient.controller;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -40,11 +42,16 @@ public class CustomerApiController {
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> create(@RequestBody Customer customer, HttpServletRequest request) {
-		try {			
-			customer.setOperation(Constants.Operations.CREATE.getValue());
-			customer.setIp(Util.getClientIp(request));
-			rabbitTemplate.convertAndSend(rabbitMqExchange, rabbitMqRoutingKey, Util.convertObjectToJson(customer));			
-			return new ResponseEntity<>(HttpStatus.OK);
+		try {
+			Optional<String> errorMessage = validateCustomer(customer);
+			if (errorMessage.isPresent()) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage.get());	
+			}else {
+				customer.setOperation(Constants.Operations.CREATE.getValue());
+				customer.setIp(Util.getClientIp(request));
+				rabbitTemplate.convertAndSend(rabbitMqExchange, rabbitMqRoutingKey, Util.convertObjectToJson(customer));			
+				return new ResponseEntity<>(HttpStatus.OK);
+			}
 		}catch(Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -53,9 +60,14 @@ public class CustomerApiController {
 	@PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> update(@RequestBody Customer customer) {
 		try {
-			customer.setOperation(Constants.Operations.UPDATE.getValue());
-			rabbitTemplate.convertAndSend(rabbitMqExchange, rabbitMqRoutingKey, Util.convertObjectToJson(customer));
-			return new ResponseEntity<>(HttpStatus.OK);
+			Optional<String> errorMessage = validateCustomer(customer);
+			if (errorMessage.isPresent()) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage.get());
+			}else {
+				customer.setOperation(Constants.Operations.UPDATE.getValue());
+				rabbitTemplate.convertAndSend(rabbitMqExchange, rabbitMqRoutingKey, Util.convertObjectToJson(customer));
+				return new ResponseEntity<>(HttpStatus.OK);
+			}
 		}catch(Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -72,5 +84,16 @@ public class CustomerApiController {
 		}catch(Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	public Optional<String> validateCustomer(Customer customer) {
+		Optional<String> message = Optional.empty();
+		
+		if (customer.getAge() == null || customer.getAge() == 0) {
+			message = Optional.of("O campo 'age' é mandatório");
+		}else if (customer.getName() == null || "".equals(customer.getName())) { 
+			message = Optional.of("O campo 'name' é mandatório");
+		}
+		return message;
 	}
 }
