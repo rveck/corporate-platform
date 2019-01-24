@@ -26,10 +26,10 @@ Recomenda-se a configuração do deploy de produção no Jenkins.
 3. Rode as aplicações com o comando `java -jar <NOME DO JAR NA PASTA TARGET>` começando com os projetos "config-service" e "eureka-service";
 4. URLs disponíveis:
 - Criar cliente (POST): http://localhost:9999/api/customer/; Request: {"name":"José da Silva","age":42}
-- Atualizar cliente (PUT): http://localhost:9999/api/customer/; Request: {"id": "<ID DO CLIENTE>", "name":"José da Silva","age":42}
-- Deletar Cliente (DELETE): http://localhost:9999/api/customer/<ID DO CLIENTE>
+- Atualizar cliente (PUT): http://localhost:9999/api/customer/; Request: {"id": "< ID DO CLIENTE >", "name":"José da Silva","age":42}
+- Deletar Cliente (DELETE): http://localhost:9999/api/customer/< ID DO CLIENTE >
 - Consultar todos os clientes cadastrados (GET): http://localhost:9999/customer-service/customer/
-- Consultar os dados de um cliente pelo ID (GET): http://localhost:9999/customer-service/customer/<ID DO CLIENTE>
+- Consultar os dados de um cliente pelo ID (GET): http://localhost:9999/customer-service/customer/< ID DO CLIENTE >
 
 # Observações
 1. Caso seja necessário alterar alguma configuração do projeto, faça o checkout do projeto https://github.com/rveck/corporate-platform-config, altere as configurações necessários, faça o push em um outro repositório GIT e indique o camainho do novo repositoório no arquivo "boostrap.properties" e todos os projetos;
