@@ -53,7 +53,7 @@ public class CustomerApiController {
 				return new ResponseEntity<>(HttpStatus.OK);
 			}
 		}catch(Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 	
@@ -69,7 +69,7 @@ public class CustomerApiController {
 				return new ResponseEntity<>(HttpStatus.OK);
 			}
 		}catch(Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class CustomerApiController {
 			rabbitTemplate.convertAndSend(rabbitMqExchange, rabbitMqRoutingKey, Util.convertObjectToJson(customer));			
 			return new ResponseEntity<>(HttpStatus.OK);
 		}catch(Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 	
